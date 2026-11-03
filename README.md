@@ -1,3 +1,16 @@
+# Foldcord
+
+<img src="branding/logo-white.png" width="96" alt="Foldcord logo">
+
+A light Discord desktop client mod by xohus and CloudCord, built on [Equicord](https://github.com/Equicord/Equicord) and [Vencord](https://github.com/Vendicated/Vencord). Adds a Foldcord settings tab, BetterDiscord plugin support and the Fake Profile plugin.
+
+- Code: GPL-3.0-or-later (`LICENSE`). Name, logo and branding: `FOLDCORD-LICENSE.md`. Credits: `NOTICE.md`.
+- Build: `pnpm install --frozen-lockfile && pnpm build`
+
+---
+
+## Upstream Equicord README
+
 # [<img src="./browser/icon.png" width="40" align="left" alt="Equicord">](https://github.com/Equicord/Equicord) Equicord
 
 [![Equibop](https://img.shields.io/badge/Equibop-grey?style=flat)](https://github.com/Equicord/Equibop)

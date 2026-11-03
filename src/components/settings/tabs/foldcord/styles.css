@@ -1,0 +1,26 @@
+/* Foldcord settings tab. Card layout follows the BetterDiscord addon-card style (written fresh, no BD CSS). */
+.fc-hero { display: flex; align-items: center; gap: 16px; padding: 20px; border-radius: 12px; margin-bottom: 16px;
+    background: linear-gradient(135deg, #6d4aff 0%, #3a1f9e 100%); }
+.fc-hero-logo { width: 64px; height: 64px; }
+.fc-hero-title { font-size: 26px; font-weight: 800; color: #fff; }
+.fc-hero-sub { color: rgb(255 255 255 / 80%); margin-top: 4px; }
+
+.fc-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px; }
+.fc-stat { display: flex; flex-direction: column; align-items: center; padding: 12px; border-radius: 8px; background: var(--background-base-lower, var(--background-secondary)); }
+.fc-stat b { font-size: 22px; color: var(--text-strong, var(--header-primary)); }
+.fc-stat span { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+
+.fc-section-header { display: flex; align-items: center; justify-content: space-between; margin: 16px 0 8px; }
+.fc-section-header h2 { font-size: 16px; font-weight: 700; color: var(--text-strong, var(--header-primary)); text-transform: uppercase; }
+.fc-hint { color: var(--text-muted); font-size: 14px; line-height: 1.4; margin-bottom: 12px; }
+.fc-empty { color: var(--text-muted); padding: 16px; text-align: center; border: 1px dashed var(--border-subtle, var(--background-modifier-accent)); border-radius: 8px; }
+
+.fc-grid { display: flex; flex-direction: column; gap: 10px; }
+.fc-card { border-radius: 8px; overflow: hidden; background: var(--background-base-lower, var(--background-secondary)); border-left: 3px solid transparent; }
+.fc-card-on { border-left-color: #8b6dff; }
+.fc-card-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--background-base-lowest, var(--background-secondary-alt)); }
+.fc-card-title { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.fc-card-name { font-weight: 700; color: var(--text-strong, var(--header-primary)); }
+.fc-card-version, .fc-card-author { font-size: 12px; color: var(--text-muted); }
+.fc-card-body { padding: 12px 16px; color: var(--text-default, var(--text-normal)); font-size: 14px; }
+.fc-card-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 8px 16px; border-top: 1px solid var(--border-subtle, var(--background-modifier-accent)); }

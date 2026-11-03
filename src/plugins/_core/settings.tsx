@@ -10,6 +10,8 @@ import {
     BackupAndRestoreTab,
     ChangelogTab,
     CloudTab,
+    FoldcordIcon,
+    FoldcordTab,
     PatchHelperTab,
     PluginsTab,
     ThemesTab,
@@ -191,6 +193,13 @@ export default definePlugin({
 
         const equicordEntries: SettingsLayoutNode[] = [
             buildEntry({
+                key: "foldcord_main",
+                title: "Foldcord",
+                panelTitle: "Foldcord",
+                Component: FoldcordTab,
+                Icon: FoldcordIcon
+            }),
+            buildEntry({
                 key: "equicord_main",
                 title: "Equicord",
                 panelTitle: "Equicord Settings",
@@ -247,7 +256,7 @@ export default definePlugin({
         const equicordSection: SettingsLayoutNode = {
             key: "equicord_section",
             type: LayoutTypes.SECTION,
-            useTitle: () => "Equicord Settings",
+            useTitle: () => "Foldcord Settings",
             buildLayout: () => equicordEntries
         };
 
