@@ -116,12 +116,7 @@ function HomeTab() {
                 ))}
             </div>
 
-            <div className={cl("section-header")}><h2>License</h2></div>
-            <p className={cl("hint")}>
-                Foldcord's name, logo and branding are © 2026 xohus and CloudCord, all rights reserved.
-                Code from Vencord and Equicord, and the Fake Profile plugin (based on Sincord's plugin, also shipped by Endcord),
-                remain under the GNU GPL v3.0. See LICENSE and NOTICE in the source.
-            </p>
+            <p className={cl("license")}>© 2026 Foldcord. Other parts are under their own licenses.</p>
         </SettingsTab>
     );
 }
