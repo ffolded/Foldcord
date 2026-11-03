@@ -18,10 +18,9 @@ import type { ComponentType } from "react";
 
 import ChangelogTab from "../changelog";
 import PatchHelperTab from "../patchHelper";
-import PluginsTab from "../plugins";
+import { PluginsPage, ThemesPage } from "./AddonPage";
 import { openPluginModal } from "../plugins/PluginModal";
 import BackupAndRestoreTab from "../sync/BackupAndRestoreTab";
-import ThemesTab from "../themes";
 import UpdaterTab from "../updater";
 import VencordTab from "../vencord";
 import logo from "file://logo-white.png?base64";
@@ -150,8 +149,8 @@ const FoldcordPage = () => <TabbedPage tabs={[
 ]} />;
 
 const AddonsPage = () => <TabbedPage tabs={[
-    ["Plugins", PluginsTab, PluginsIcon],
-    ["Themes", ThemesTab, PaintbrushIcon],
+    ["Plugins", PluginsPage, PluginsIcon],
+    ["Themes", ThemesPage, PaintbrushIcon],
 ]} />;
 
 export const AddonsTab = wrapTab(AddonsPage, "Addons");

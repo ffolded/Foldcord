@@ -72,3 +72,24 @@
     .fc-tiles { grid-template-columns: 1fr; }
     .fc-featured { grid-template-columns: 1fr; }
 }
+
+/* Addons pages, BetterDiscord addon-list layout */
+.fc-addons-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.fc-addons-title { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; color: var(--text-strong, var(--header-primary)); }
+.fc-addons-count { padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 700; color: #fff; background: var(--fc-accent); }
+.fc-addons-search { display: flex; align-items: center; gap: 6px; width: 220px; padding: 6px 10px; border-radius: 6px; color: var(--interactive-normal, var(--text-muted));
+    background: var(--background-base-lowest, var(--background-tertiary)); }
+.fc-addons-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; color: var(--text-default, var(--text-normal)); font-size: 13px; }
+.fc-addons-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.fc-addons-basic, .fc-addons-advanced, .fc-addons-views { display: flex; align-items: center; gap: 6px; }
+.fc-addons-advanced { gap: 14px; }
+.fc-addons-icon-btn, .fc-addons-view { display: grid; place-items: center; padding: 4px; border-radius: 4px; background: none; color: var(--interactive-normal, var(--text-muted)); cursor: pointer; }
+.fc-addons-icon-btn:hover, .fc-addons-view:hover { color: var(--interactive-hover, var(--text-default)); background: var(--background-modifier-hover); }
+.fc-addons-view-on, .fc-addons-view-on:hover { color: #fff; background: var(--fc-accent); }
+.fc-addons-select { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.fc-addons-select select { padding: 4px 6px; border: 0; border-radius: 4px; outline: 0; font-size: 13px; color: var(--text-default, var(--text-normal)); background: var(--background-base-lowest, var(--background-tertiary)); }
+.fc-addons-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.fc-addons-grid { grid-template-columns: 1fr 1fr; }
+.fc-addons-empty { padding: 32px; text-align: center; color: var(--text-muted); }
+.fc-addons-version { font-size: 12px; color: var(--text-muted); }
+.fc-addons-empty code { padding: 1px 4px; border-radius: 3px; background: var(--background-base-lowest, var(--background-tertiary)); }

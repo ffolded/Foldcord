@@ -10,7 +10,6 @@
  * and grid classes, list view by default, Foldcord accent on enabled cards.
  */
 
-.vc-plugins-grid,
 .vc-settings-theme-grid {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
@@ -49,13 +48,29 @@
     display: flex;
     align-items: baseline;
     gap: 6px;
+    flex: 1;
     min-width: 0;
 }
 
 .vc-addon-name {
     width: auto;
-    flex-grow: 0;
+    min-width: 0;
+    flex: 0 1 auto;
     font-size: 14px;
+}
+
+/* Show the whole name instead of the scrolling marquee */
+.vc-addon-title-container {
+    height: auto;
+    overflow: hidden;
+}
+
+.vc-addon-title {
+    position: static;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    animation: none !important;
 }
 
 .vc-addon-author {

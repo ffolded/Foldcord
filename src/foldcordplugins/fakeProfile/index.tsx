@@ -2089,7 +2089,7 @@ export default definePlugin({
     name: "ProfileSpoofer",
     enabledByDefault: true,
     description: "Updating / experimental — visually customize your profile. Some options may currently contain errors.",
-    authors: [{ name: "xohus", id: 0n }, { name: "Sincord contributors", id: 0n }, { name: "Endcord contributors", id: 0n }],
+    authors: [{ name: "xohus (CloudCord)", id: 0n }],
     dependencies: ["HeaderBarAPI", "ContextMenuAPI", "ProfileSectionsAPI"],
 
     patches: [

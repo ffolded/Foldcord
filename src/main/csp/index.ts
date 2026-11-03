@@ -26,6 +26,9 @@ export const CspPolicies: PolicyMap = {
     "localhost:*": ImageAndCssSrc,
     "127.0.0.1:*": ImageAndCssSrc,
     "ws://localhost:*": ConnectSrc,
+    // Fake Profile (CloudCord profile sync)
+    "getcloudcord.com": ImageSrc,
+    "*.getcloudcord.com": ImageSrc,
     "ws://127.0.0.1:*": ConnectSrc,
 
     "*.github.io": ImageAndCssSrc, // GitHub pages, used by most themes
