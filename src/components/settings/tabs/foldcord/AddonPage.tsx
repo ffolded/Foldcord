@@ -160,6 +160,30 @@ async function fetchStore() {
 
 const linkName = (url: string) => decodeURIComponent(url.split("/").pop() ?? url).replace(/\.theme\.css$|\.css$/i, "");
 
+/**
+ * Most BetterDiscord themes @import their real stylesheet (plus images and fonts) from the
+ * author's site, which Discord's CSP blocks. Ask the user to allow those sites, once per site,
+ * using the existing CSP prompt. The change applies after Discord restarts.
+ */
+async function allowThemeSources(fileName: string) {
+    const css = await VencordNative.themes.getThemeData(fileName);
+    if (!css) return;
+    const origins = new Set<string>();
+    for (const m of css.matchAll(/(?:@import\s+(?:url\()?|url\()\s*["']?(https:\/\/[^"')\s;]+)/gi)) {
+        try { origins.add(new URL(m[1]).origin); } catch { }
+    }
+    const directives = ["style-src", "img-src", "font-src"];
+    const needed: string[] = [];
+    for (const origin of origins) {
+        if (!await VencordNative.csp.isDomainAllowed(origin, directives)) needed.push(origin);
+    }
+    if (!needed.length) return;
+    const result = await VencordNative.csp.requestAddOverride(needed, directives, "Themes");
+    if (result === "ok") {
+        showToast({ text: "Restart Discord to finish loading this theme", variant: "success" } as any);
+    }
+}
+
 interface Row {
     key: string;
     name: string;
@@ -190,6 +214,7 @@ export function ThemesPage() {
     const isOn = (f: string) => settings.enabledThemes.includes(f);
     const setOn = (f: string, on: boolean) => {
         settings.enabledThemes = on ? [...new Set([...settings.enabledThemes, f])] : settings.enabledThemes.filter(x => x !== f);
+        if (on) void allowThemeSources(f);
     };
     const linkOn = (url: string) => settings.enabledThemeLinks.includes(url);
     const setLinkOn = (url: string, on: boolean) => {

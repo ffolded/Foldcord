@@ -66,10 +66,11 @@ namespace Foldcord.Installer
 
     public static class Core
     {
-        public static readonly string DistDir = IOPath.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Foldcord", "dist");
+        static readonly string DataDir = IOPath.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Foldcord");
 
-        static readonly string[] DistFiles = { "patcher.js", "preload.js", "renderer.js", "renderer.css", "package.json" };
+        // Foldcord ships as one asar so its built-in updater can replace it from GitHub Releases.
+        public static readonly string AsarPath = IOPath.Combine(DataDir, "foldcord.asar");
 
         public static List<DiscordBuild> FindBuilds()
         {
@@ -83,16 +84,15 @@ namespace Foldcord.Installer
 
         public static void WriteDist()
         {
-            Directory.CreateDirectory(DistDir);
-            var asm = Assembly.GetExecutingAssembly();
-            foreach (var name in DistFiles)
+            Directory.CreateDirectory(DataDir);
+            using (var src = Assembly.GetExecutingAssembly().GetManifestResourceStream("foldcord.asar"))
             {
-                using (var src = asm.GetManifestResourceStream("dist." + name))
-                {
-                    if (src == null) throw new Exception("Installer is missing " + name);
-                    using (var dst = File.Create(IOPath.Combine(DistDir, name))) src.CopyTo(dst);
-                }
+                if (src == null) throw new Exception("Installer is missing foldcord.asar");
+                using (var dst = File.Create(AsarPath)) src.CopyTo(dst);
             }
+            // Older installs used a loose dist folder; it is no longer loaded.
+            var oldDist = IOPath.Combine(DataDir, "dist");
+            if (Directory.Exists(oldDist)) { try { Directory.Delete(oldDist, true); } catch { } }
         }
 
         public static void KillDiscord(DiscordBuild b)
@@ -114,8 +114,8 @@ namespace Foldcord.Installer
             if (!File.Exists(backup)) throw new Exception(b.Name + " looks damaged: app.asar is missing. Reinstall Discord and try again.");
 
             Directory.CreateDirectory(app);
-            var patcher = IOPath.Combine(DistDir, "patcher.js").Replace('\\', '/');
-            File.WriteAllText(IOPath.Combine(app, "index.js"), "// Foldcord\nrequire(\"" + patcher + "\");\n");
+            var asarPath = AsarPath.Replace('\\', '/');
+            File.WriteAllText(IOPath.Combine(app, "index.js"), "// Foldcord\nrequire(\"" + asarPath + "\");\n");
             File.WriteAllText(IOPath.Combine(app, "package.json"), "{\"name\":\"discord\",\"main\":\"index.js\"}\n");
         }
 
@@ -536,13 +536,15 @@ namespace Foldcord.Installer
                 try
                 {
                     System.Threading.Thread.Sleep(350);
-                    if (install) { step(0.2, "Unpacking Foldcord…"); Core.WriteDist(); System.Threading.Thread.Sleep(300); }
+                    // Every Discord build loads the same foldcord.asar, so close them all before
+                    // touching it; a running one keeps the file locked.
+                    step(0.15, "Closing Discord…");
+                    foreach (var b in builds) Core.KillDiscord(b);
+                    System.Threading.Thread.Sleep(800);
+                    if (install) { step(0.3, "Unpacking Foldcord…"); Core.WriteDist(); System.Threading.Thread.Sleep(300); }
                     var n = 0;
                     foreach (var b in targets)
                     {
-                        step(0.35 + 0.5 * n / targets.Count, "Closing " + b.Name + "…");
-                        Core.KillDiscord(b);
-                        System.Threading.Thread.Sleep(600);
                         step(0.45 + 0.5 * n / targets.Count, (install ? "Installing into " : "Removing from ") + b.Name + "…");
                         if (install) Core.Inject(b); else Core.Remove(b);
                         n++;

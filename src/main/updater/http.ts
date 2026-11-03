@@ -54,14 +54,17 @@ async function listUpdates() {
 }
 
 async function fetchUpdate() {
-    const data = await githubGet("/releases/latest");
+    // Foldcord: releases can also hold just the installer, so use the newest release that
+    // actually ships the asar. Its name ends with the commit hash, e.g. "Foldcord 70a8e114b".
+    const releases: any[] = await githubGet("/releases?per_page=20");
+    const data = releases.find(r => !r.draft && r.assets?.some((a: any) => a.name === ASAR_FILE));
+    if (!data) return false;
 
-    const hash = data.name.slice(data.name.lastIndexOf(" ") + 1);
-    if (hash === gitHash)
+    const hash = (data.name ?? "").slice(data.name.lastIndexOf(" ") + 1);
+    if (gitHash.startsWith(hash) || hash.startsWith(gitHash))
         return false;
 
-    const asset = data.assets.find(a => a.name === ASAR_FILE);
-    PendingUpdate = asset.browser_download_url;
+    PendingUpdate = data.assets.find((a: any) => a.name === ASAR_FILE).browser_download_url;
 
     return true;
 }
