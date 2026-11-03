@@ -14,6 +14,16 @@ import { plugins } from "@api/PluginManager";
 import { classNameFactory } from "@utils/css";
 import { IconProps } from "@utils/types";
 import { useEffect, useState } from "@webpack/common";
+import type { ComponentType } from "react";
+
+import ChangelogTab from "../changelog";
+import PatchHelperTab from "../patchHelper";
+import PluginsTab from "../plugins";
+import BackupAndRestoreTab from "../sync/BackupAndRestoreTab";
+import CloudTab from "../sync/CloudTab";
+import ThemesTab from "../themes";
+import UpdaterTab from "../updater";
+import VencordTab from "../vencord";
 
 import { addBDPlugin, BDPluginEntry, getEntries, removeBDPlugin, setBDPluginEnabled, subscribe } from "./bdLoader";
 import logo from "file://logo-white.png?base64";
@@ -59,7 +69,7 @@ function Card({ name, version, author, description, enabled, onToggle, actions }
     );
 }
 
-function FoldcordTab() {
+function HomeTab() {
     const bd = useBDPlugins();
     const { enabledThemes, themeLinks } = useSettings(["enabledThemes", "themeLinks"]);
     const all = Object.values(plugins);
@@ -115,6 +125,44 @@ function FoldcordTab() {
                 remain under the GNU GPL v3.0. See LICENSE and NOTICE in the source.
             </p>
         </SettingsTab>
+    );
+}
+
+// Everything lives under one Foldcord sidebar entry, switched with this tab bar.
+const SUB_TABS: [string, ComponentType<any> | null][] = [
+    ["Home", HomeTab],
+    ["Plugins", PluginsTab],
+    ["Themes", ThemesTab],
+    ["Settings", VencordTab],
+    ["Updater", UpdaterTab],
+    ["Changelog", ChangelogTab],
+    ["Cloud", CloudTab],
+    ["Backup", BackupAndRestoreTab],
+    ["Patch Helper", PatchHelperTab],
+];
+
+function FoldcordTab() {
+    const tabs = SUB_TABS.filter((t): t is [string, ComponentType<any>] => t[1] != null);
+    const [current, setCurrent] = useState(tabs[0][0]);
+    const Current = tabs.find(t => t[0] === current)?.[1] ?? HomeTab;
+
+    return (
+        <>
+            <div className={cl("tabbar")} role="tablist">
+                {tabs.map(([name]) => (
+                    <button
+                        key={name}
+                        role="tab"
+                        aria-selected={name === current}
+                        className={cl("tab", { "tab-active": name === current })}
+                        onClick={() => setCurrent(name)}
+                    >
+                        {name}
+                    </button>
+                ))}
+            </div>
+            <Current />
+        </>
     );
 }
 

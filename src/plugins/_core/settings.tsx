@@ -5,19 +5,7 @@
  */
 
 import { definePluginSettings } from "@api/Settings";
-import { BackupRestoreIcon, CloudIcon, LogIcon, MainSettingsIcon, PaintbrushIcon, PatchHelperIcon, PluginsIcon, UpdaterIcon } from "@components/Icons";
-import {
-    BackupAndRestoreTab,
-    ChangelogTab,
-    CloudTab,
-    FoldcordIcon,
-    FoldcordTab,
-    PatchHelperTab,
-    PluginsTab,
-    ThemesTab,
-    UpdaterTab,
-    VencordTab,
-} from "@components/settings";
+import { FoldcordIcon, FoldcordTab } from "@components/settings";
 import { gitHashShort } from "@shared/vencordUserAgent";
 import { Devs } from "@utils/constants";
 import { isTruthy } from "@utils/guards";
@@ -192,63 +180,13 @@ export default definePlugin({
         const { buildEntry } = this;
 
         const equicordEntries: SettingsLayoutNode[] = [
+            // Foldcord: one tab; Equicord, Plugins, Themes, Updater etc. are sub-tabs inside it
             buildEntry({
                 key: "foldcord_main",
                 title: "Foldcord",
                 panelTitle: "Foldcord",
                 Component: FoldcordTab,
                 Icon: FoldcordIcon
-            }),
-            buildEntry({
-                key: "equicord_main",
-                title: "Equicord",
-                panelTitle: "Equicord Settings",
-                Component: VencordTab,
-                Icon: MainSettingsIcon
-            }),
-            buildEntry({
-                key: "equicord_plugins",
-                title: "Plugins",
-                Component: PluginsTab,
-                Icon: PluginsIcon
-            }),
-            buildEntry({
-                key: "equicord_themes",
-                title: "Themes",
-                Component: ThemesTab,
-                Icon: PaintbrushIcon
-            }),
-            !IS_UPDATER_DISABLED && UpdaterTab && buildEntry({
-                key: "equicord_updater",
-                title: "Updater",
-                panelTitle: "Equicord Updater",
-                Component: UpdaterTab,
-                Icon: UpdaterIcon
-            }),
-            buildEntry({
-                key: "equicord_changelog",
-                title: "Changelog",
-                Component: ChangelogTab,
-                Icon: LogIcon,
-            }),
-            buildEntry({
-                key: "equicord_cloud",
-                title: "Cloud",
-                panelTitle: "Equicord Cloud",
-                Component: CloudTab,
-                Icon: CloudIcon
-            }),
-            buildEntry({
-                key: "equicord_backup_restore",
-                title: "Backup & Restore",
-                Component: BackupAndRestoreTab,
-                Icon: BackupRestoreIcon
-            }),
-            !IS_STANDALONE && PatchHelperTab && buildEntry({
-                key: "equicord_patch_helper",
-                title: "Patch Helper",
-                Component: PatchHelperTab,
-                Icon: PatchHelperIcon
             }),
             ...this.customEntries.map(buildEntry)
         ].filter(isTruthy);

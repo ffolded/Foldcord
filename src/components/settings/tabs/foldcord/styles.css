@@ -24,3 +24,9 @@
 .fc-card-version, .fc-card-author { font-size: 12px; color: var(--text-muted); }
 .fc-card-body { padding: 12px 16px; color: var(--text-default, var(--text-normal)); font-size: 14px; }
 .fc-card-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 8px 16px; border-top: 1px solid var(--border-subtle, var(--background-modifier-accent)); }
+
+.fc-tabbar { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; margin-bottom: 16px; border-radius: 10px;
+    background: var(--background-base-lower, var(--background-secondary)); }
+.fc-tab { padding: 6px 12px; border-radius: 6px; background: none; color: var(--text-muted); font-size: 14px; font-weight: 600; cursor: pointer; }
+.fc-tab:hover { color: var(--text-default, var(--text-normal)); background: var(--background-modifier-hover); }
+.fc-tab-active, .fc-tab-active:hover { color: #fff; background: #6d4aff; }
