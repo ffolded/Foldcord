@@ -1,0 +1,44 @@
+/* Foldcord first-run tutorial */
+.fc-tut-root { width: min(760px, 92vw) !important; max-height: none !important; border-radius: 18px !important; overflow: hidden;
+    background: var(--background-base-low, var(--background-primary)) !important; box-shadow: 0 24px 80px rgb(0 0 0 / 55%) !important; }
+.fc-tut-wrap { position: relative; display: flex; flex-direction: column; }
+
+.fc-tut-skip { position: absolute; top: 14px; right: 14px; z-index: 2; padding: 6px 12px; border-radius: 8px; background: rgb(0 0 0 / 35%);
+    color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; backdrop-filter: blur(6px); transition: background .15s; }
+.fc-tut-skip:hover { background: rgb(0 0 0 / 55%); }
+
+.fc-tut-stage { position: relative; aspect-ratio: 1100 / 601; overflow: hidden;
+    background: radial-gradient(120% 120% at 20% 0%, #8a6bff 0%, #4b2fc9 40%, #150d33 100%); animation: fc-tut-fade .35s ease-out; }
+.fc-tut-shot { display: block; width: 100%; height: 100%; object-fit: cover; animation: fc-tut-zoom .5s cubic-bezier(.2, .8, .2, 1); }
+
+.fc-tut-hero { position: absolute; inset: 0; display: grid; place-items: center; }
+.fc-tut-glow { position: absolute; width: 60%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgb(255 255 255 / 28%) 0%, transparent 65%);
+    animation: fc-tut-pulse 3s ease-in-out infinite; }
+.fc-tut-logo { position: relative; width: 150px; height: 150px; filter: drop-shadow(0 10px 30px rgb(0 0 0 / 45%));
+    animation: fc-tut-pop .7s cubic-bezier(.2, 1.4, .4, 1) both, fc-tut-float 4s ease-in-out .7s infinite; }
+
+.fc-tut-text { padding: 22px 28px 6px; animation: fc-tut-rise .4s ease-out both; }
+.fc-tut-title { margin: 0 0 6px; font-size: 24px; font-weight: 800; letter-spacing: -.01em; color: var(--text-strong, var(--header-primary)); }
+.fc-tut-body { margin: 0; font-size: 15px; line-height: 1.5; color: var(--text-muted); }
+
+.fc-tut-footer { display: flex; align-items: center; justify-content: space-between; padding: 18px 28px 24px; }
+.fc-tut-dots { display: flex; gap: 6px; }
+.fc-tut-dot { width: 8px; height: 8px; padding: 0; border-radius: 4px; background: var(--background-modifier-accent, #4e5058); cursor: pointer; transition: width .25s, background .25s; }
+.fc-tut-dot-on { width: 24px; background: #7c5cff; }
+.fc-tut-buttons { display: flex; gap: 8px; }
+.fc-tut-back, .fc-tut-next { padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: filter .15s, transform .15s; }
+.fc-tut-back { background: none; color: var(--text-default, var(--text-normal)); }
+.fc-tut-back:hover { background: var(--background-modifier-hover); }
+.fc-tut-next { background: linear-gradient(135deg, #8a6bff, #5b3ce6); color: #fff; box-shadow: 0 6px 18px rgb(124 92 255 / 35%); }
+.fc-tut-next:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+@keyframes fc-tut-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fc-tut-zoom { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+@keyframes fc-tut-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fc-tut-pop { from { opacity: 0; transform: scale(.6) rotate(-8deg); } to { opacity: 1; transform: none; } }
+@keyframes fc-tut-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes fc-tut-pulse { 0%, 100% { transform: scale(.9); opacity: .7; } 50% { transform: scale(1.05); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .fc-tut-root * { animation: none !important; transition: none !important; }
+}

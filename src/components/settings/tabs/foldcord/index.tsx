@@ -19,6 +19,7 @@ import type { ComponentType } from "react";
 import ChangelogTab from "../changelog";
 import PatchHelperTab from "../patchHelper";
 import { PluginsPage, ThemesPage } from "./AddonPage";
+import { openTutorial } from "./Tutorial";
 import { openPluginModal } from "../plugins/PluginModal";
 import BackupAndRestoreTab from "../sync/BackupAndRestoreTab";
 import UpdaterTab from "../updater";
@@ -83,6 +84,7 @@ function HomeTab() {
                 <button className={cl("action")} onClick={() => VencordNative.quickCss.openEditor()}><PaintbrushIcon width={18} height={18} />QuickCSS</button>
                 {!IS_WEB && <button className={cl("action")} onClick={() => VencordNative.settings.openFolder()}><FolderIcon width={18} height={18} />Settings folder</button>}
                 {!IS_WEB && <button className={cl("action")} onClick={relaunch}><RestartIcon width={18} height={18} />Relaunch</button>}
+                <button className={cl("action")} onClick={openTutorial}><HomeIcon width={18} height={18} />Tour</button>
             </div>
 
             <div className={cl("label")}>Featured</div>

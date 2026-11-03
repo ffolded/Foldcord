@@ -133,7 +133,7 @@ interface StoreTheme {
     latest_source_url: string;
 }
 
-const Native = VencordNative.pluginHelpers.FoldcordStore as PluginNative<typeof import("../../../../foldcordplugins/foldcordStore/native")>;
+const Native = VencordNative.pluginHelpers.FoldcordCore as PluginNative<typeof import("../../../../foldcordplugins/foldcordCore/native")>;
 
 let storeCache: StoreTheme[] | null = null;
 async function fetchStore() {
