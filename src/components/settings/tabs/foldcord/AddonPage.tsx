@@ -17,7 +17,7 @@ import { SettingsTab } from "@components/settings/tabs/BaseTab";
 import { classNameFactory } from "@utils/css";
 import { promptToRestart } from "@utils/promptToRestart";
 import type { PluginNative } from "@utils/types";
-import { showToast, useEffect, useMemo, useState } from "@webpack/common";
+import { showToast, useEffect, useMemo, useRef, useState } from "@webpack/common";
 
 import { PluginCard } from "../plugins/PluginCard";
 import ThemesTab from "../themes";
@@ -52,12 +52,27 @@ export function AddonHeader({ title, count, query, setQuery }: { title: string; 
 export const listablePlugins = () =>
     Object.values(plugins).filter(p => !p.hidden && !p.required && !(p.name.endsWith("API") && !p.settings?.def));
 
+// Render cards in pages as you scroll, so opening Plugins stays fast.
+const PAGE = 48;
+
+function LoadMore({ onVisible }: { onVisible(): void; }) {
+    const ref = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const io = new IntersectionObserver(e => { if (e[0].isIntersecting) onVisible(); }, { rootMargin: "600px" });
+        if (ref.current) io.observe(ref.current);
+        return () => io.disconnect();
+    });
+    return <div ref={ref} className={cl("more")} />;
+}
+
 export function PluginsPage() {
     useSettings(["plugins.*"]);
     const [query, setQuery] = useState("");
     const [sort, setSort] = useState<Sort>("name");
     const [grid, setGrid] = useState(false);
     const [, force] = useState(0);
+    const [limit, setLimit] = useState(PAGE);
+    useEffect(() => setLimit(PAGE), [query, sort]);
 
     const visible = useMemo(listablePlugins, []);
 
@@ -106,9 +121,10 @@ export function PluginsPage() {
                 ? <div className={cl("empty")}>No plugins match “{query}”.</div>
                 : (
                     <div className={cl("list", { grid })}>
-                        {shown.map(p => <PluginCard key={p.name} plugin={p} disabled={false} onRestartNeeded={onRestartNeeded} />)}
+                        {shown.slice(0, limit).map(p => <PluginCard key={p.name} plugin={p} disabled={false} onRestartNeeded={onRestartNeeded} />)}
                     </div>
                 )}
+            {shown.length > limit && <LoadMore onVisible={() => setLimit(l => l + PAGE)} />}
         </SettingsTab>
     );
 }

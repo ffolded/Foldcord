@@ -119,3 +119,4 @@
 .fc-addons-store-list { grid-template-columns: 1fr; }
 .fc-addons-store-list .fc-addons-store-card { flex-direction: row; }
 .fc-addons-store-list .fc-addons-thumb { width: 200px; flex: none; }
+.fc-addons-more { height: 1px; }
