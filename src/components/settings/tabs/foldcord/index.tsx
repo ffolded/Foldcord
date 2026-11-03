@@ -13,13 +13,14 @@ import { SettingsTab, wrapTab } from "@components/settings/tabs/BaseTab";
 import { plugins } from "@api/PluginManager";
 import { classNameFactory } from "@utils/css";
 import { IconProps } from "@utils/types";
-import { useEffect, useState } from "@webpack/common";
+import { SettingsRouter, useEffect, useState } from "@webpack/common";
 import type { ComponentType } from "react";
 
 import ChangelogTab from "../changelog";
 import PatchHelperTab from "../patchHelper";
 import BackupAndRestoreTab from "../sync/BackupAndRestoreTab";
 import CloudTab from "../sync/CloudTab";
+import { openPluginModal } from "../plugins/PluginModal";
 import UpdaterTab from "../updater";
 import VencordTab from "../vencord";
 
@@ -67,38 +68,84 @@ function Card({ name, version, author, description, enabled, onToggle, actions }
     );
 }
 
-function HomeTab() {
+const FEATURED: { name: string; label: string; blurb: string; }[] = [
+    { name: "ProfileSpoofer", label: "Fake Profile", blurb: "Custom avatar, banner, badges and effects" },
+    { name: "FakeNitro", label: "Fake Nitro", blurb: "Use any emoji and sticker, stream in HD" },
+    { name: "MessageLogger", label: "Message Logger", blurb: "Keep deleted and edited messages" },
+    { name: "ShowHiddenChannels", label: "Hidden Channels", blurb: "See channels you can't open" },
+    { name: "BetterFolders", label: "Better Folders", blurb: "Server folders in their own sidebar" },
+    { name: "TypingIndicator", label: "Typing Indicator", blurb: "See who's typing in every channel" },
+];
+
+const openSettings = (key: string) => SettingsRouter.openUserSettings(key + "_panel");
+
+function AddonTile({ title, count, sub, onClick }: { title: string; count: number | string; sub: string; onClick(): void; }) {
+    return (
+        <button className={cl("tile")} onClick={onClick}>
+            <span className={cl("tile-count")}>{count}</span>
+            <span className={cl("tile-title")}>{title}</span>
+            <span className={cl("tile-sub")}>{sub}</span>
+        </button>
+    );
+}
+
+function HomeTab({ go }: { go(tab: string): void; }) {
     const bd = useBDPlugins();
     const { enabledThemes, themeLinks } = useSettings(["enabledThemes", "themeLinks"]);
-    const all = Object.values(plugins);
-    const userFacing = all.filter(p => !p.required && !p.hidden);
+    const userFacing = Object.values(plugins).filter(p => !p.required && !p.hidden);
     const enabledCount = userFacing.filter(p => Settings.plugins[p.name]?.enabled).length;
 
     return (
         <SettingsTab>
             <div className={cl("hero")}>
-                <img src={FOLDCORD_LOGO} className={cl("hero-logo")} alt="Foldcord" />
-                <div>
+                <img src={FOLDCORD_LOGO} className={cl("hero-logo")} alt="" />
+                <div className={cl("hero-text")}>
                     <div className={cl("hero-title")}>Foldcord</div>
-                    <div className={cl("hero-sub")}>A light Discord client mod, built on Equicord and Vencord.</div>
+                    <div className={cl("hero-sub")}>{enabledCount} of {userFacing.length} plugins on</div>
                 </div>
             </div>
 
-            <div className={cl("stats")}>
-                <div className={cl("stat")}><b>{userFacing.length}</b><span>plugins</span></div>
-                <div className={cl("stat")}><b>{enabledCount}</b><span>enabled</span></div>
-                <div className={cl("stat")}><b>{bd.length}</b><span>BD plugins</span></div>
-                <div className={cl("stat")}><b>{enabledThemes.length + themeLinks.length}</b><span>themes in use</span></div>
+            <div className={cl("label")}>Addons</div>
+            <div className={cl("tiles")}>
+                <AddonTile title="Plugins" count={userFacing.length} sub={enabledCount + " enabled"} onClick={() => openSettings("equicord_plugins")} />
+                <AddonTile title="Themes" count={enabledThemes.length + themeLinks.length} sub="in use" onClick={() => openSettings("equicord_themes")} />
+                <AddonTile title="BetterDiscord" count={bd.length} sub="BD plugins" onClick={() => go("BetterDiscord")} />
             </div>
 
+            <div className={cl("label")}>Featured</div>
+            <div className={cl("featured")}>
+                {FEATURED.map(f => {
+                    const plugin = plugins[f.name];
+                    if (!plugin) return null;
+                    const on = !!Settings.plugins[f.name]?.enabled;
+                    return (
+                        <button key={f.name} className={cl("feat", { "feat-on": on })} onClick={() => openPluginModal(plugin)}>
+                            <span className={cl("feat-dot")} />
+                            <span className={cl("feat-text")}>
+                                <span className={cl("feat-name")}>{f.label}</span>
+                                <span className={cl("feat-blurb")}>{f.blurb}</span>
+                            </span>
+                        </button>
+                    );
+                })}
+            </div>
+
+            <p className={cl("license")}>© 2026 Foldcord. Other parts are under their own licenses.</p>
+        </SettingsTab>
+    );
+}
+
+function BetterDiscordTab() {
+    const bd = useBDPlugins();
+    return (
+        <SettingsTab>
             <div className={cl("section-header")}>
-                <h2>BetterDiscord plugins</h2>
+                <div className={cl("label")}>BetterDiscord plugins</div>
                 <Button size="small" onClick={pickPluginFile}>Add .plugin.js</Button>
             </div>
             <p className={cl("hint")}>
-                Foldcord runs most BetterDiscord plugins through a BdApi compatibility layer
-                (Patcher, Webpack, Data, DOM, UI). Plugins that need Node or file system access won't work.
-                Only add plugins you trust: they run with full access to your Discord session.
+                Most BetterDiscord plugins work. Ones that need Node or file access don't.
+                Only add plugins you trust.
             </p>
             <div className={cl("grid")}>
                 {bd.length === 0 && <div className={cl("empty")}>No BetterDiscord plugins yet.</div>}
@@ -115,8 +162,6 @@ function HomeTab() {
                     />
                 ))}
             </div>
-
-            <p className={cl("license")}>© 2026 Foldcord. Other parts are under their own licenses.</p>
         </SettingsTab>
     );
 }
@@ -124,6 +169,7 @@ function HomeTab() {
 // Plugins and Themes have their own sidebar entries; the rest lives under Foldcord, switched with this tab bar.
 const SUB_TABS: [string, ComponentType<any> | null][] = [
     ["Home", HomeTab],
+    ["BetterDiscord", BetterDiscordTab],
     ["Settings", VencordTab],
     ["Updater", UpdaterTab],
     ["Changelog", ChangelogTab],
@@ -152,7 +198,7 @@ function FoldcordTab() {
                     </button>
                 ))}
             </div>
-            <Current />
+            <Current go={setCurrent} />
         </>
     );
 }
