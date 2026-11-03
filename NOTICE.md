@@ -13,7 +13,9 @@ Foldcord is a Discord client mod by xohus and CloudCord.
 
 Changes for Foldcord: moved helper modules into the plugin folder, adapted toasts and the profile modal call to the current Equicord API, and removed the CloudCord staff-badge list.
 
-No other Sincord or Endcord code is included.
+## Endcord plugins
+
+`src/endcordplugins/` holds 131 plugins from **Endcord** (github.com/Endcord/Endcord, commit `ff97e15`), GPL-3.0-or-later, credited to Endcord and its contributors ewlle, rootpoi, kraethis and vpg. Endcord rewrites author credits in its source, so original authors (possibly including Sincord contributors) may not be named; see `src/endcordplugins/README.md`.
 
 ## BetterDiscord
 

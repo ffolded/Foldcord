@@ -16,6 +16,7 @@ This license covers Foldcord's own brand assets, owned by xohus and CloudCord:
 | --- | --- | --- |
 | All source code in this repository, including code written for Foldcord (for example `src/components/settings/tabs/foldcord/`, `src/foldcordplugins/foldcordBDCompat/`) | Vencord and Equicord | GNU GPL v3.0 or later, see `LICENSE` |
 | `src/foldcordplugins/fakeProfile/` (Fake Profile) | Sincord's FakeProfile / Custom Profile plugin, also shipped by Endcord as `customProfile`, with CloudCord changes | GNU GPL v3.0 or later, see `LICENSE` |
+| `src/endcordplugins/` and the Endcord support files listed in `NOTICE.md` | Endcord | GNU GPL v3.0 or later, see `LICENSE` |
 | Third-party packages in `package.json` | Their authors | Their own licenses |
 
 The Sincord, Endcord, Vencord and Equicord notices in those files must be kept. Nothing in this license restricts any right the GPL gives you over that code. If anything here seems to conflict with the GPL for code, the GPL wins.
