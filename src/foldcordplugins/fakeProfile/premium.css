@@ -1,91 +1,72 @@
 /*
- * Foldcord: premium skin for the Fake Profile editor, layered over editor.css.
+ * Foldcord: clean, fully rounded skin for the Fake Profile editor, layered over editor.css.
+ * Flat colours only: no gradients, no glow, no preview panel.
  * Copyright (c) 2026 xohus and CloudCord
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 .cpx-root {
     --cpx-accent: #7c5cff;
-    --cpx-accent-2: #5b3ce6;
-    --cpx-accent-soft: rgb(124 92 255 / 14%);
+    --cpx-accent-soft: rgb(124 92 255 / 16%);
+    --cpx-r: 999px;
 
-    border-radius: 18px !important;
+    border-radius: 28px !important;
     overflow: hidden;
+    box-shadow: none !important;
     border: 1px solid rgb(255 255 255 / 6%);
-    box-shadow: 0 30px 90px rgb(0 0 0 / 55%), 0 0 0 1px rgb(124 92 255 / 12%) !important;
 }
 
-/* Header with a soft gradient and a glowing badge */
-.cpx-root .cpx-header {
-    background: radial-gradient(120% 220% at 0% 0%, rgb(124 92 255 / 28%) 0%, transparent 55%), var(--background-base-lowest, var(--background-tertiary)) !important;
-    border-bottom: 1px solid rgb(255 255 255 / 6%);
-}
+/* Two columns now that the preview is gone */
+.cpx-root .cpx-layout { grid-template-columns: 200px minmax(0, 1fr); }
 
+/* Header */
+.cpx-root .cpx-header { background: var(--background-base-lowest, var(--background-tertiary)) !important; border-bottom: 0; padding: 18px 22px !important; }
 .cpx-header-title { align-items: center; gap: 12px !important; }
-
-.cpx-header-badge {
-    display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; color: #fff;
-    background: linear-gradient(135deg, #9a80ff, var(--cpx-accent-2));
-    box-shadow: 0 6px 18px rgb(124 92 255 / 45%);
-}
-
+.cpx-header-badge { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; color: #fff; background: var(--cpx-accent); }
 .cpx-header-text { display: flex; flex-direction: column; line-height: 1.2; }
 .cpx-header-sub { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+.cpx-root .cpx-close { border-radius: 50%; }
+.cpx-root .cpx-account > * { border-radius: var(--cpx-r) !important; }
 
-/* Nav: accent bar and tint on the active tab */
-.cpx-root .cpx-tab { border-radius: 10px; transition: background .15s, color .15s; }
-.cpx-root .cpx-tab[aria-selected="true"] {
-    color: var(--text-strong, #fff);
-    background: var(--cpx-accent-soft) !important;
-    box-shadow: inset 3px 0 0 var(--cpx-accent);
-}
-.cpx-root .cpx-tab[aria-selected="true"] svg { color: var(--cpx-accent); }
+/* Nav: round pills */
+.cpx-root .cpx-tabs { border-right: 0; padding: 14px 12px; background: var(--background-base-lowest, var(--background-tertiary)); }
+.cpx-root .cpx-tab { border-radius: var(--cpx-r); padding: 10px 14px; }
+.cpx-root .cpx-tab.cpx-on { background: var(--cpx-accent-soft); color: var(--text-strong, #fff); }
+.cpx-root .cpx-tab.cpx-on svg { color: var(--cpx-accent); }
 
-/* Sections as soft cards */
-.cpx-root .cpx-section {
-    padding: 18px 20px;
-    border-radius: 14px;
-    background: rgb(255 255 255 / 2.5%);
-    border: 1px solid rgb(255 255 255 / 5%);
-}
+/* Sections as round cards */
+.cpx-root .cpx-panel { padding: 18px 22px 28px; gap: 14px; }
+.cpx-root .cpx-section { padding: 20px 22px; border-radius: 24px; background: rgb(255 255 255 / 3%); }
+.cpx-root .cpx-section + .cpx-section { padding-top: 20px; border-top: 0; }
 
-/* Inputs: focus ring in the accent colour */
-.cpx-root .cpx-input:focus, .cpx-root .cpx-input:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--cpx-accent);
-}
-
-/* Buttons */
-.cpx-root .cpx-btn { border-radius: 10px; transition: filter .15s, transform .15s, background .15s; }
-.cpx-root .cpx-btn:hover:not(:disabled) { transform: translateY(-1px); }
-.cpx-root .cpx-btn-primary {
-    background: linear-gradient(135deg, #9a80ff, var(--cpx-accent-2)) !important;
-    box-shadow: 0 8px 22px rgb(124 92 255 / 40%);
-}
-.cpx-root .cpx-btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
-
-/* Switches use the accent colour */
+/* Inputs, selects, segments and buttons: pills */
+.cpx-root .cpx-input, .cpx-root .cpx-select { border-radius: var(--cpx-r); padding-left: 16px; padding-right: 16px; }
+.cpx-root textarea.cpx-input { border-radius: 20px; }
+.cpx-root .cpx-input:focus { border-color: var(--cpx-accent); }
+.cpx-root .cpx-segment { border-radius: var(--cpx-r); }
+.cpx-root .cpx-segment.cpx-on { border-color: var(--cpx-accent); background: var(--cpx-accent-soft); }
+.cpx-root .cpx-btn, .cpx-root .cpx-icon-btn, .cpx-root .cpx-chip { border-radius: var(--cpx-r) !important; }
+.cpx-root .cpx-btn-primary { background: var(--cpx-accent) !important; box-shadow: none; }
 .cpx-root .cpx-switch-on { background: var(--cpx-accent) !important; }
+.cpx-root .cpx-switch-row { border-radius: 20px; }
 
-/* Preview card glow */
-.cpx-root .cpx-preview > :first-child, .cpx-root .cpx-dc { box-shadow: 0 18px 50px rgb(0 0 0 / 45%), 0 0 0 1px rgb(255 255 255 / 6%); }
+/* Round image slots and cards inside panels */
+.cpx-root .cpx-image-banner { border-radius: 20px; }
+.cpx-root .cpx-badge-card, .cpx-root .cpx-saved-item, .cpx-root .cpx-tpl-card,
+.cpx-root .cpx-social-row, .cpx-root .cpx-order-row, .cpx-root .cpx-result { border-radius: 20px !important; }
 
 /* Thin dark scrollbar instead of the white default */
-.cpx-root .cpx-scroller, .cpx-root .cpx-panel { scrollbar-width: thin; scrollbar-color: rgb(255 255 255 / 18%) transparent; }
+.cpx-root .cpx-scroller, .cpx-root .cpx-panel, .cpx-root .cpx-tabs { scrollbar-width: thin; scrollbar-color: rgb(255 255 255 / 18%) transparent; }
 .cpx-root ::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
 .cpx-root ::-webkit-scrollbar-track { background: transparent; }
 .cpx-root ::-webkit-scrollbar-thumb { border-radius: 8px; border: 2px solid transparent; background: rgb(255 255 255 / 18%) padding-box; }
-.cpx-root ::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 30%) padding-box; }
 .cpx-root ::-webkit-scrollbar-button { display: none; }
 
-/* Ownership notice above the footer */
-.cpx-notice {
-    padding: 8px 24px;
-    font-size: 11.5px;
-    line-height: 1.4;
-    color: var(--text-muted);
-    background: var(--background-base-lowest, var(--background-tertiary));
-    border-top: 1px solid rgb(255 255 255 / 5%);
-}
+/* Ownership notice and footer */
+.cpx-notice { padding: 10px 26px 0; font-size: 11.5px; line-height: 1.4; color: var(--text-muted); background: var(--background-base-lowest, var(--background-tertiary)); }
+.cpx-root .cpx-footer { background: var(--background-base-lowest, var(--background-tertiary)) !important; border-top: 0; padding: 12px 22px 18px !important; }
 
-.cpx-root .cpx-footer { background: var(--background-base-lowest, var(--background-tertiary)) !important; }
+/* One flat background, so there are no square seams between the nav and the content */
+.cpx-root .cpx-content, .cpx-root .cpx-scroller, .cpx-root .cpx-layout, .cpx-root .cpx-panel { background: var(--background-base-lowest, var(--background-tertiary)) !important; }
+.cpx-root .cpx-section { background: rgb(255 255 255 / 4%); }
+.cpx-root .cpx-account [class*="select"], .cpx-root .cpx-account [class*="wrapper"], .cpx-root .cpx-account [class*="container"] { border-radius: var(--cpx-r) !important; }
