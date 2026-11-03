@@ -48,6 +48,10 @@ export function AddonHeader({ title, count, query, setQuery }: { title: string; 
     );
 }
 
+/** The plugins people can turn on and off; shared by Home and the Plugins page so the counts match. */
+export const listablePlugins = () =>
+    Object.values(plugins).filter(p => !p.hidden && !p.required && !(p.name.endsWith("API") && !p.settings?.def));
+
 export function PluginsPage() {
     useSettings(["plugins.*"]);
     const [query, setQuery] = useState("");
@@ -55,10 +59,7 @@ export function PluginsPage() {
     const [grid, setGrid] = useState(false);
     const [, force] = useState(0);
 
-    const visible = useMemo(
-        () => Object.values(plugins).filter(p => !p.hidden && !p.required && !(p.name.endsWith("API") && !p.settings?.def)),
-        []
-    );
+    const visible = useMemo(listablePlugins, []);
 
     const q = query.trim().toLowerCase();
     const shown = visible

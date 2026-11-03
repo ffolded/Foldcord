@@ -18,7 +18,7 @@ import type { ComponentType } from "react";
 
 import ChangelogTab from "../changelog";
 import PatchHelperTab from "../patchHelper";
-import { PluginsPage, ThemesPage } from "./AddonPage";
+import { listablePlugins, PluginsPage, ThemesPage } from "./AddonPage";
 import { openTutorial } from "./Tutorial";
 import { openPluginModal } from "../plugins/PluginModal";
 import BackupAndRestoreTab from "../sync/BackupAndRestoreTab";
@@ -46,6 +46,10 @@ const HomeIcon = ({ width = 16, height = 16, className }: IconProps) => (
     <svg width={width} height={height} viewBox="0 0 24 24" className={className} fill="currentColor"><path d="M11.3 2.3a1 1 0 0 1 1.4 0l9 8.5A1 1 0 0 1 21 12.5h-1V20a2 2 0 0 1-2 2h-3a1 1 0 0 1-1-1v-5h-4v5a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2v-7.5H3a1 1 0 0 1-.7-1.7l9-8.5Z" /></svg>
 );
 
+const TourIcon = () => (
+    <svg width={18} height={18} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-2 14.5v-9l7 4.5-7 4.5Z" /></svg>
+);
+
 const openAddons = () => SettingsRouter.openUserSettings("foldcord_addons_panel");
 
 function AddonTile({ title, count, sub, onClick }: { title: string; count: number | string; sub: string; onClick(): void; }) {
@@ -60,7 +64,7 @@ function AddonTile({ title, count, sub, onClick }: { title: string; count: numbe
 
 function HomeTab() {
     const { enabledThemes, themeLinks } = useSettings(["enabledThemes", "themeLinks"]);
-    const userFacing = Object.values(plugins).filter(p => !p.required && !p.hidden);
+    const userFacing = listablePlugins();
     const enabledCount = userFacing.filter(p => Settings.plugins[p.name]?.enabled).length;
 
     return (
@@ -84,7 +88,7 @@ function HomeTab() {
                 <button className={cl("action")} onClick={() => VencordNative.quickCss.openEditor()}><PaintbrushIcon width={18} height={18} />QuickCSS</button>
                 {!IS_WEB && <button className={cl("action")} onClick={() => VencordNative.settings.openFolder()}><FolderIcon width={18} height={18} />Settings folder</button>}
                 {!IS_WEB && <button className={cl("action")} onClick={relaunch}><RestartIcon width={18} height={18} />Relaunch</button>}
-                <button className={cl("action")} onClick={openTutorial}><HomeIcon width={18} height={18} />Tour</button>
+                <button className={cl("action")} onClick={openTutorial}><TourIcon />Tour</button>
             </div>
 
             <div className={cl("label")}>Featured</div>

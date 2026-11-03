@@ -210,6 +210,18 @@ namespace Foldcord.Installer
             }
         }
 
+        int panelShots;
+        void SnapshotPanel()
+        {
+            var dir = Environment.GetEnvironmentVariable("FOLDCORD_SNAPSHOT");
+            if (string.IsNullOrEmpty(dir)) return;
+            var n = ++panelShots;
+            var frame = (Border)Content;
+            var t = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(900) };
+            t.Tick += (s, e) => { t.Stop(); Snapshot(frame, IOPath.Combine(dir, "panel-" + n + ".png")); };
+            t.Start();
+        }
+
         public static void Snapshot(FrameworkElement el, string file)
         {
             var bmp = new RenderTargetBitmap((int)(el.ActualWidth + 40), (int)(el.ActualHeight + 40), 96, 96, PixelFormats.Pbgra32);
@@ -404,6 +416,7 @@ namespace Foldcord.Installer
             panel = el;
             content.Children.Add(el);
             FadeIn(el, 120, 26, 480);
+            SnapshotPanel();
         }
 
         void ShowChooser()
