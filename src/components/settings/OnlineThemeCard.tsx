@@ -17,6 +17,7 @@
 */
 
 import "./AddonCard.css";
+import "./FoldcordAddonCards.css";
 
 import { Badge } from "@components/Badge";
 import { BaseText } from "@components/BaseText";
