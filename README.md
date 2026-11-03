@@ -6,6 +6,7 @@ A light Discord desktop client mod by xohus and CloudCord, built on [Equicord](h
 
 - Code: GPL-3.0-or-later (`LICENSE`). Name, logo and branding: `FOLDCORD-LICENSE.md`. Credits: `NOTICE.md`.
 - Build: `pnpm install --frozen-lockfile && pnpm build`
+- Installer: `bash installer/build.sh` (after `pnpm build`) makes `installer/out/FoldcordInstaller.exe`, a small animated Windows installer that needs only the .NET Framework 4.8 built into Windows. It installs into Discord, PTB and Canary, and can repair or uninstall.
 
 ---
 
