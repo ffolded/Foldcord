@@ -435,7 +435,7 @@ namespace Foldcord.Installer
             foreach (var b in found)
             {
                 var row = new DockPanel();
-                var box = new CheckBox { IsChecked = i == 0, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 14, 0), Cursor = Cursors.Hand, LayoutTransform = new ScaleTransform(1.3, 1.3) };
+                var box = new CheckBox { IsChecked = i == 0, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 14, 0), Cursor = Cursors.Hand, Template = CheckTemplate() };
                 picks[b] = box;
                 DockPanel.SetDock(box, Dock.Left);
                 row.Children.Add(box);
@@ -465,6 +465,35 @@ namespace Foldcord.Installer
             if (found.Count > 0) stack.Children.Add(buttons);
 
             SetPanel(stack);
+        }
+
+        // Rounded check box: outlined when off, purple with a white tick when on.
+        static ControlTemplate CheckTemplate()
+        {
+            var t = new ControlTemplate(typeof(CheckBox));
+            var box = new FrameworkElementFactory(typeof(Border), "box");
+            box.SetValue(FrameworkElement.WidthProperty, 22.0);
+            box.SetValue(FrameworkElement.HeightProperty, 22.0);
+            box.SetValue(Border.CornerRadiusProperty, new CornerRadius(7));
+            box.SetValue(Border.BorderThicknessProperty, new Thickness(2));
+            box.SetValue(Border.BorderBrushProperty, new SolidColorBrush(Color.FromArgb(110, 255, 255, 255)));
+            box.SetValue(Border.BackgroundProperty, Brushes.Transparent);
+            var tick = new FrameworkElementFactory(typeof(System.Windows.Shapes.Path), "tick");
+            tick.SetValue(System.Windows.Shapes.Path.DataProperty, Geometry.Parse("M 4,10 L 8,14 L 15,6"));
+            tick.SetValue(Shape.StrokeProperty, Brushes.White);
+            tick.SetValue(Shape.StrokeThicknessProperty, 2.6);
+            tick.SetValue(Shape.StrokeStartLineCapProperty, PenLineCap.Round);
+            tick.SetValue(Shape.StrokeEndLineCapProperty, PenLineCap.Round);
+            tick.SetValue(Shape.StrokeLineJoinProperty, PenLineJoin.Round);
+            tick.SetValue(UIElement.VisibilityProperty, Visibility.Collapsed);
+            box.AppendChild(tick);
+            t.VisualTree = box;
+            var on = new Trigger { Property = System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, Value = true };
+            on.Setters.Add(new Setter(Border.BackgroundProperty, new SolidColorBrush(Accent), "box"));
+            on.Setters.Add(new Setter(Border.BorderBrushProperty, new SolidColorBrush(Accent), "box"));
+            on.Setters.Add(new Setter(UIElement.VisibilityProperty, Visibility.Visible, "tick"));
+            t.Triggers.Add(on);
+            return t;
         }
 
         Border Card(UIElement child)
