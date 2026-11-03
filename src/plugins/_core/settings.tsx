@@ -5,8 +5,8 @@
  */
 
 import { definePluginSettings } from "@api/Settings";
-import { PaintbrushIcon, PluginsIcon } from "@components/Icons";
-import { FoldcordIcon, FoldcordTab, PluginsTab, ThemesTab } from "@components/settings";
+import { PluginsIcon } from "@components/Icons";
+import { AddonsTab, FoldcordIcon, FoldcordTab } from "@components/settings";
 import { gitHashShort } from "@shared/vencordUserAgent";
 import { Devs } from "@utils/constants";
 import { isTruthy } from "@utils/guards";
@@ -89,7 +89,7 @@ interface SettingsLayoutBuilder {
 const settings = definePluginSettings({
     settingsLocation: {
         type: OptionType.SELECT,
-        description: "Where to put the Equicord settings section",
+        description: "Where to put the Foldcord settings section",
         options: [
             { label: "At the very top", value: "top" },
             { label: "Above Billing section", value: "aboveNitro", default: true },
@@ -101,7 +101,7 @@ const settings = definePluginSettings({
     },
     includeVencordInfoWhenCopying: {
         type: OptionType.BOOLEAN,
-        description: "Also copy Equicord info (Equicord, Electron, Chromium) when clicking the version info in the bottom left area of the Settings page",
+        description: "Also copy Foldcord info (Foldcord, Electron, Chromium) when clicking the version info in the bottom left area of the Settings page",
         default: true
     }
 });
@@ -181,7 +181,7 @@ export default definePlugin({
         const { buildEntry } = this;
 
         const equicordEntries: SettingsLayoutNode[] = [
-            // Foldcord: three entries; Settings, Updater, Changelog etc. are sub-tabs inside Foldcord
+            // Foldcord: two entries, Foldcord and Addons, each with sub-tabs
             buildEntry({
                 key: "foldcord_main",
                 title: "Foldcord",
@@ -190,16 +190,10 @@ export default definePlugin({
                 Icon: FoldcordIcon
             }),
             buildEntry({
-                key: "equicord_plugins",
-                title: "Plugins",
-                Component: PluginsTab,
+                key: "foldcord_addons",
+                title: "Addons",
+                Component: AddonsTab,
                 Icon: PluginsIcon
-            }),
-            buildEntry({
-                key: "equicord_themes",
-                title: "Themes",
-                Component: ThemesTab,
-                Icon: PaintbrushIcon
             }),
             ...this.customEntries.map(buildEntry)
         ].filter(isTruthy);
@@ -273,7 +267,7 @@ export default definePlugin({
     getInfoRows() {
         const { electronVersion, chromiumVersion, getVersionInfo } = this;
 
-        const rows = [`Equicord ${gitHashShort}${getVersionInfo()}`];
+        const rows = [`Foldcord ${gitHashShort}${getVersionInfo()}`];
 
         if (electronVersion) rows.push(`Electron ${electronVersion}`);
         if (chromiumVersion) rows.push(`Chromium ${chromiumVersion}`);

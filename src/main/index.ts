@@ -101,8 +101,8 @@ if (!IS_VANILLA && !IS_EXTENSION) {
         try {
             if (RendererSettings.store.enableReactDevtools)
                 installExt("fmkadmapgofadopljbjfkapdkoienihi")
-                    .then(() => console.info("[Equicord] Installed React Developer Tools"))
-                    .catch(err => console.error("[Equicord] Failed to install React Developer Tools", err));
+                    .then(() => console.info("[Foldcord] Installed React Developer Tools"))
+                    .catch(err => console.error("[Foldcord] Failed to install React Developer Tools", err));
         } catch { }
 
         initCsp();

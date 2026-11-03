@@ -97,8 +97,8 @@ export function PluginCard({ plugin, disabled, onRestartNeeded, onMouseEnter, on
         {
             condition: isEquicordPlugin,
             src: "https://equicord.org/assets/favicon.png",
-            alt: "Equicord",
-            title: "Equicord Plugin"
+            alt: "Foldcord",
+            title: "Foldcord Plugin"
         },
         {
             condition: isVencordPlugin,
@@ -129,7 +129,7 @@ export function PluginCard({ plugin, disabled, onRestartNeeded, onMouseEnter, on
     return (
         <AddonCard
             name={plugin.name}
-            sourceBadge={sourceBadge}
+            sourceBadge={null}
             tooltip={tooltip}
             description={plugin.description}
             isNew={isNew}

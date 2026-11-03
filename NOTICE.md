@@ -19,7 +19,7 @@ Changes for Foldcord: moved helper modules into the plugin folder, adapted toast
 
 ## BetterDiscord
 
-Foldcord's BetterDiscord plugin support (`src/components/settings/tabs/foldcord/bdLoader.ts`) and BD-style cards are written for Foldcord and contain no BetterDiscord code. BetterDiscord (https://github.com/BetterDiscord/BetterDiscord) is licensed Apache-2.0.
+`src/components/settings/FoldcordAddonCards.css` adapts the addon-card styles from BetterDiscord (https://github.com/BetterDiscord/BetterDiscord, `src/betterdiscord/styles/ui/addonlist.css`, commit `1a5e1a5`), Copyright BetterDiscord contributors, licensed under the Apache License 2.0 (copy in `licenses/BetterDiscord-Apache-2.0.txt`). The file keeps that notice and says what was changed. No other BetterDiscord code is included.
 
 ## Licenses
 

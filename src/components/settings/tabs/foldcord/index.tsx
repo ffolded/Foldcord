@@ -6,25 +6,24 @@
 
 import "./styles.css";
 
-import { Settings, useSettings } from "@api/Settings";
-import { Button } from "@components/Button";
-import { Switch } from "@components/Switch";
-import { SettingsTab, wrapTab } from "@components/settings/tabs/BaseTab";
 import { plugins } from "@api/PluginManager";
+import { Settings, useSettings } from "@api/Settings";
+import { SettingsTab, wrapTab } from "@components/settings/tabs/BaseTab";
+import { BackupRestoreIcon, FolderIcon, LogIcon, MainSettingsIcon, PaintbrushIcon, PatchHelperIcon, PluginsIcon, RestartIcon, UpdaterIcon } from "@components/Icons";
 import { classNameFactory } from "@utils/css";
+import { relaunch } from "@utils/native";
 import { IconProps } from "@utils/types";
-import { SettingsRouter, useEffect, useState } from "@webpack/common";
+import { SettingsRouter, useState } from "@webpack/common";
 import type { ComponentType } from "react";
 
 import ChangelogTab from "../changelog";
 import PatchHelperTab from "../patchHelper";
-import BackupAndRestoreTab from "../sync/BackupAndRestoreTab";
-import CloudTab from "../sync/CloudTab";
+import PluginsTab from "../plugins";
 import { openPluginModal } from "../plugins/PluginModal";
+import BackupAndRestoreTab from "../sync/BackupAndRestoreTab";
+import ThemesTab from "../themes";
 import UpdaterTab from "../updater";
 import VencordTab from "../vencord";
-
-import { addBDPlugin, BDPluginEntry, getEntries, removeBDPlugin, setBDPluginEnabled, subscribe } from "./bdLoader";
 import logo from "file://logo-white.png?base64";
 
 const cl = classNameFactory("fc-");
@@ -32,40 +31,6 @@ export const FOLDCORD_LOGO = `data:image/png;base64,${logo}`;
 
 export function FoldcordIcon({ width = 20, height = 20, className }: IconProps) {
     return <img src={FOLDCORD_LOGO} width={width} height={height} className={className} alt="" draggable={false} />;
-}
-
-function useBDPlugins() {
-    const [list, setList] = useState<BDPluginEntry[]>(getEntries());
-    useEffect(() => subscribe(() => setList(getEntries())), []);
-    return list;
-}
-
-function pickPluginFile() {
-    const input = Object.assign(document.createElement("input"), { type: "file", accept: ".js", multiple: true });
-    input.onchange = async () => {
-        for (const file of Array.from(input.files ?? [])) await addBDPlugin(file.name, await file.text());
-    };
-    input.click();
-}
-
-function Card({ name, version, author, description, enabled, onToggle, actions }: {
-    name: string; version?: string; author?: string; description?: string;
-    enabled: boolean; onToggle(v: boolean): void; actions?: React.ReactNode;
-}) {
-    return (
-        <div className={cl("card", { "card-on": enabled })}>
-            <div className={cl("card-header")}>
-                <div className={cl("card-title")}>
-                    <span className={cl("card-name")}>{name}</span>
-                    {version && <span className={cl("card-version")}>v{version}</span>}
-                    {author && <span className={cl("card-author")}>by {author}</span>}
-                </div>
-                <Switch checked={enabled} onChange={onToggle} />
-            </div>
-            <div className={cl("card-body")}>{description || "No description provided."}</div>
-            {actions && <div className={cl("card-footer")}>{actions}</div>}
-        </div>
-    );
 }
 
 const FEATURED: { name: string; label: string; blurb: string; }[] = [
@@ -77,7 +42,11 @@ const FEATURED: { name: string; label: string; blurb: string; }[] = [
     { name: "TypingIndicator", label: "Typing Indicator", blurb: "See who's typing in every channel" },
 ];
 
-const openSettings = (key: string) => SettingsRouter.openUserSettings(key + "_panel");
+const HomeIcon = ({ width = 16, height = 16, className }: IconProps) => (
+    <svg width={width} height={height} viewBox="0 0 24 24" className={className} fill="currentColor"><path d="M11.3 2.3a1 1 0 0 1 1.4 0l9 8.5A1 1 0 0 1 21 12.5h-1V20a2 2 0 0 1-2 2h-3a1 1 0 0 1-1-1v-5h-4v5a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2v-7.5H3a1 1 0 0 1-.7-1.7l9-8.5Z" /></svg>
+);
+
+const openAddons = () => SettingsRouter.openUserSettings("foldcord_addons_panel");
 
 function AddonTile({ title, count, sub, onClick }: { title: string; count: number | string; sub: string; onClick(): void; }) {
     return (
@@ -89,8 +58,7 @@ function AddonTile({ title, count, sub, onClick }: { title: string; count: numbe
     );
 }
 
-function HomeTab({ go }: { go(tab: string): void; }) {
-    const bd = useBDPlugins();
+function HomeTab() {
     const { enabledThemes, themeLinks } = useSettings(["enabledThemes", "themeLinks"]);
     const userFacing = Object.values(plugins).filter(p => !p.required && !p.hidden);
     const enabledCount = userFacing.filter(p => Settings.plugins[p.name]?.enabled).length;
@@ -107,9 +75,15 @@ function HomeTab({ go }: { go(tab: string): void; }) {
 
             <div className={cl("label")}>Addons</div>
             <div className={cl("tiles")}>
-                <AddonTile title="Plugins" count={userFacing.length} sub={enabledCount + " enabled"} onClick={() => openSettings("equicord_plugins")} />
-                <AddonTile title="Themes" count={enabledThemes.length + themeLinks.length} sub="in use" onClick={() => openSettings("equicord_themes")} />
-                <AddonTile title="BetterDiscord" count={bd.length} sub="BD plugins" onClick={() => go("BetterDiscord")} />
+                <AddonTile title="Plugins" count={userFacing.length} sub={enabledCount + " enabled"} onClick={openAddons} />
+                <AddonTile title="Themes" count={enabledThemes.length + themeLinks.length} sub="in use" onClick={openAddons} />
+            </div>
+
+            <div className={cl("label")}>Quick actions</div>
+            <div className={cl("actions")}>
+                <button className={cl("action")} onClick={() => VencordNative.quickCss.openEditor()}><PaintbrushIcon width={18} height={18} />QuickCSS</button>
+                {!IS_WEB && <button className={cl("action")} onClick={() => VencordNative.settings.openFolder()}><FolderIcon width={18} height={18} />Settings folder</button>}
+                {!IS_WEB && <button className={cl("action")} onClick={relaunch}><RestartIcon width={18} height={18} />Relaunch</button>}
             </div>
 
             <div className={cl("label")}>Featured</div>
@@ -135,72 +109,50 @@ function HomeTab({ go }: { go(tab: string): void; }) {
     );
 }
 
-function BetterDiscordTab() {
-    const bd = useBDPlugins();
-    return (
-        <SettingsTab>
-            <div className={cl("section-header")}>
-                <div className={cl("label")}>BetterDiscord plugins</div>
-                <Button size="small" onClick={pickPluginFile}>Add .plugin.js</Button>
-            </div>
-            <p className={cl("hint")}>
-                Most BetterDiscord plugins work. Ones that need Node or file access don't.
-                Only add plugins you trust.
-            </p>
-            <div className={cl("grid")}>
-                {bd.length === 0 && <div className={cl("empty")}>No BetterDiscord plugins yet.</div>}
-                {bd.map(p => (
-                    <Card
-                        key={p.id}
-                        name={p.meta.name}
-                        version={p.meta.version}
-                        author={p.meta.author}
-                        description={p.meta.description}
-                        enabled={p.enabled}
-                        onToggle={v => setBDPluginEnabled(p.id, v)}
-                        actions={<Button size="small" variant="dangerPrimary" onClick={() => removeBDPlugin(p.id)}>Remove</Button>}
-                    />
-                ))}
-            </div>
-        </SettingsTab>
-    );
-}
+type SubTab = [name: string, Component: ComponentType<any> | null, Icon: ComponentType<IconProps>];
 
-// Plugins and Themes have their own sidebar entries; the rest lives under Foldcord, switched with this tab bar.
-const SUB_TABS: [string, ComponentType<any> | null][] = [
-    ["Home", HomeTab],
-    ["BetterDiscord", BetterDiscordTab],
-    ["Settings", VencordTab],
-    ["Updater", UpdaterTab],
-    ["Changelog", ChangelogTab],
-    ["Cloud", CloudTab],
-    ["Backup", BackupAndRestoreTab],
-    ["Patch Helper", PatchHelperTab],
-];
-
-function FoldcordTab() {
-    const tabs = SUB_TABS.filter((t): t is [string, ComponentType<any>] => t[1] != null);
-    const [current, setCurrent] = useState(tabs[0][0]);
-    const Current = tabs.find(t => t[0] === current)?.[1] ?? HomeTab;
+function TabbedPage({ tabs }: { tabs: SubTab[]; }) {
+    const shown = tabs.filter(t => t[1] != null) as [string, ComponentType<any>, ComponentType<IconProps>][];
+    const [current, setCurrent] = useState(shown[0][0]);
+    const Current = shown.find(t => t[0] === current)?.[1] ?? shown[0][1];
 
     return (
         <>
-            <div className={cl("tabbar")} role="tablist">
-                {tabs.map(([name]) => (
+            <nav className={cl("seg")} role="tablist">
+                {shown.map(([name, , Icon]) => (
                     <button
                         key={name}
                         role="tab"
                         aria-selected={name === current}
-                        className={cl("tab", { "tab-active": name === current })}
+                        className={cl("seg-item", { "seg-active": name === current })}
                         onClick={() => setCurrent(name)}
                     >
-                        {name}
+                        <Icon width={16} height={16} className={cl("seg-icon")} />
+                        <span>{name}</span>
                     </button>
                 ))}
+            </nav>
+            <div className={cl("page")} key={current}>
+                <Current />
             </div>
-            <Current go={setCurrent} />
         </>
     );
 }
 
-export default wrapTab(FoldcordTab, "Foldcord");
+// Two sidebar entries: Foldcord (home and settings) and Addons (plugins and themes).
+const FoldcordPage = () => <TabbedPage tabs={[
+    ["Home", HomeTab, HomeIcon],
+    ["Settings", VencordTab, MainSettingsIcon],
+    ["Updater", UpdaterTab, UpdaterIcon],
+    ["Changelog", ChangelogTab, LogIcon],
+    ["Backup", BackupAndRestoreTab, BackupRestoreIcon],
+    ["Patch Helper", PatchHelperTab, PatchHelperIcon],
+]} />;
+
+const AddonsPage = () => <TabbedPage tabs={[
+    ["Plugins", PluginsTab, PluginsIcon],
+    ["Themes", ThemesTab, PaintbrushIcon],
+]} />;
+
+export const AddonsTab = wrapTab(AddonsPage, "Addons");
+export default wrapTab(FoldcordPage, "Foldcord");

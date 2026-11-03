@@ -47,8 +47,8 @@ const ContributorBadge: ProfileBadge = {
 
 const EquicordContributorBadge: ProfileBadge = {
     id: "equicord_contributor_badge",
-    description: "Equicord Contributor",
-    infoLabel: "Equicord",
+    description: "Foldcord Contributor",
+    infoLabel: "Foldcord",
     rarity: BadgeRarity.MYTHIC,
     iconSrc: "https://cdn.discordapp.com/emojis/1563740725726683167.webp?size=128",
     largeIconSrc: "https://cdn.discordapp.com/emojis/1563740725726683167.webp?size=512",
@@ -66,7 +66,7 @@ const EquicordContributorBadge: ProfileBadge = {
 const UserPluginContributorBadge: ProfileBadge = {
     id: "user_plugin_contributor_badge",
     description: "User Plugin Contributor",
-    infoLabel: "Equicord",
+    infoLabel: "Foldcord",
     rarity: BadgeRarity.MYTHIC,
     iconSrc: "https://cdn.discordapp.com/emojis/1419345679729295420.webp?size=128",
     largeIconSrc: "https://cdn.discordapp.com/emojis/1419345679729295420.webp?size=512",
@@ -122,7 +122,7 @@ function toDirectoryBadge(b: ProfileBadge, userId: string): DirectoryBadge {
         badge_id: id,
         name: b.name ?? b.description ?? "",
         description: b.detail ?? b.description ?? b.name ?? "",
-        info_label: b.infoLabel ?? "Equicord",
+        info_label: b.infoLabel ?? "Foldcord",
         rarity: b.rarity ?? BadgeRarity.COMMON,
         simple_icon_url: b.iconSrc!,
         complex_icon_static_url: b.largeIconSrc ?? b.iconSrc!,
@@ -335,7 +335,7 @@ export default definePlugin({
             iconSrc: badge.badge,
             description: badge.tooltip,
             name: badge.tooltip,
-            infoLabel: "Equicord Donor",
+            infoLabel: "Foldcord Donor",
             rarity: BadgeRarity.MYTHIC,
             position: BadgePosition.START,
             props: {
@@ -348,7 +348,7 @@ export default definePlugin({
                 ContextMenuApi.openContextMenu(event, () => <BadgeContextMenu badge={badge} />);
             },
             onClick() {
-                return badge.tooltip === "Equicord Translator" ? EquicordTranslatorModal() : EquicordDonorModal();
+                return badge.tooltip === "Foldcord Translator" ? EquicordTranslatorModal() : EquicordDonorModal();
             },
         } satisfies ProfileBadge));
     }
