@@ -11,6 +11,7 @@ import { logger } from "./logger";
 import { profileStorage, ProfileStorageKey } from "./storage";
 import "./style.css";
 import "./editor.css";
+import "./premium.css";
 import decorationCatalog from "./decorations.json";
 import { CustomSocialEditor, openSocialDetail } from "./CustomSocial";
 import { ColorField, DiscordProfileCard, Grid2, ImageField, ProfilePreview, Section, SelectField, Switch, TabId, TabList, TextField } from "./editorUi";
@@ -1995,7 +1996,13 @@ function CustomProfileModal({ rootProps }: { rootProps: any; }) {
 
     return (<ModalRoot {...rootProps} size="large" className="cpx-root">
         <ModalHeader separator={false} className="cpx-header">
-            <div className="cpx-header-title"><EditIcon size={18} /><span>Custom Profile</span></div>
+            <div className="cpx-header-title">
+                <span className="cpx-header-badge"><EditIcon size={18} /></span>
+                <span className="cpx-header-text">
+                    <span>Custom Profile</span>
+                    <span className="cpx-header-sub">by CloudCord · synced with getcloudcord.com</span>
+                </span>
+            </div>
             {accounts.length > 1 && <div className="cpx-account">
                 <Select
                     options={accounts.map((acc: any) => ({ value: acc.id, label: acc.globalName || acc.username }))}
@@ -2019,6 +2026,10 @@ function CustomProfileModal({ rootProps }: { rootProps: any; }) {
                     frameName={data.profileFrame ? catalogData?.frames.find(item => item.skuId === data.profileFrame?.skuId)?.label || "Selected" : undefined} />
             </div>
         </ModalContent>
+
+        <div className="cpx-notice">
+            Fake Profile © 2026 xohus (CloudCord). The CloudCord profile sync service, name and branding may only be used with permission from xohus.
+        </div>
 
         <ModalFooter className="cpx-footer">
             {saveError && <div className="cpx-footer-error" role="alert">{saveError}</div>}

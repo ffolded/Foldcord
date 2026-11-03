@@ -23,7 +23,11 @@ The Sincord, Endcord, Vencord and Equicord notices in those files must be kept. 
 
 `src/components/settings/FoldcordAddonCards.css` adapts BetterDiscord's addon-card styles and stays under the Apache License 2.0, with its notice kept in the file.
 
-## 1. NO TRADEMARK OR BRAND LICENSE
+## 1. CLOUDCORD PROFILE SYNC SERVICE
+
+The Fake Profile plugin talks to the CloudCord profile sync service at getcloudcord.com, which is run by xohus. Nobody may use that service, or the CloudCord name and branding, from any other client, fork or tool without permission from xohus. This is a rule for the service and the brand; the plugin's code itself stays under the GPL.
+
+## 1a. NO TRADEMARK OR BRAND LICENSE
 
 The GPL licenses the code, not the name or logo. You may not use the name "Foldcord", the Foldcord logo, or the names "CloudCord" and "xohus" in a way that suggests your project is Foldcord, is made or endorsed by xohus or CloudCord, or is officially affiliated with them.
 
