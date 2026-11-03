@@ -18,10 +18,8 @@ import type { ComponentType } from "react";
 
 import ChangelogTab from "../changelog";
 import PatchHelperTab from "../patchHelper";
-import PluginsTab from "../plugins";
 import BackupAndRestoreTab from "../sync/BackupAndRestoreTab";
 import CloudTab from "../sync/CloudTab";
-import ThemesTab from "../themes";
 import UpdaterTab from "../updater";
 import VencordTab from "../vencord";
 
@@ -128,11 +126,9 @@ function HomeTab() {
     );
 }
 
-// Everything lives under one Foldcord sidebar entry, switched with this tab bar.
+// Plugins and Themes have their own sidebar entries; the rest lives under Foldcord, switched with this tab bar.
 const SUB_TABS: [string, ComponentType<any> | null][] = [
     ["Home", HomeTab],
-    ["Plugins", PluginsTab],
-    ["Themes", ThemesTab],
     ["Settings", VencordTab],
     ["Updater", UpdaterTab],
     ["Changelog", ChangelogTab],

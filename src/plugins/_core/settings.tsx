@@ -5,7 +5,8 @@
  */
 
 import { definePluginSettings } from "@api/Settings";
-import { FoldcordIcon, FoldcordTab } from "@components/settings";
+import { PaintbrushIcon, PluginsIcon } from "@components/Icons";
+import { FoldcordIcon, FoldcordTab, PluginsTab, ThemesTab } from "@components/settings";
 import { gitHashShort } from "@shared/vencordUserAgent";
 import { Devs } from "@utils/constants";
 import { isTruthy } from "@utils/guards";
@@ -180,13 +181,25 @@ export default definePlugin({
         const { buildEntry } = this;
 
         const equicordEntries: SettingsLayoutNode[] = [
-            // Foldcord: one tab; Equicord, Plugins, Themes, Updater etc. are sub-tabs inside it
+            // Foldcord: three entries; Settings, Updater, Changelog etc. are sub-tabs inside Foldcord
             buildEntry({
                 key: "foldcord_main",
                 title: "Foldcord",
                 panelTitle: "Foldcord",
                 Component: FoldcordTab,
                 Icon: FoldcordIcon
+            }),
+            buildEntry({
+                key: "equicord_plugins",
+                title: "Plugins",
+                Component: PluginsTab,
+                Icon: PluginsIcon
+            }),
+            buildEntry({
+                key: "equicord_themes",
+                title: "Themes",
+                Component: ThemesTab,
+                Icon: PaintbrushIcon
             }),
             ...this.customEntries.map(buildEntry)
         ].filter(isTruthy);
