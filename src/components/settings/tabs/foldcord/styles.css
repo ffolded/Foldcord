@@ -93,3 +93,29 @@
 .fc-addons-empty { padding: 32px; text-align: center; color: var(--text-muted); }
 .fc-addons-version { font-size: 12px; color: var(--text-muted); }
 .fc-addons-empty code { padding: 1px 4px; border-radius: 3px; background: var(--background-base-lowest, var(--background-tertiary)); }
+
+/* Themes: Installed / Browse */
+.fc-addons-modes { display: flex; padding: 2px; margin-right: 6px; border-radius: 6px; background: var(--background-base-lowest, var(--background-tertiary)); }
+.fc-addons-mode { padding: 4px 12px; border-radius: 4px; background: none; color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; }
+.fc-addons-mode-on { color: #fff; background: var(--fc-accent); }
+.fc-addons-card-foot { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.fc-addons-remove { padding: 4px 10px; border-radius: 4px; background: none; color: var(--text-feedback-critical, #f23f43); font-size: 13px; font-weight: 600; cursor: pointer; }
+.fc-addons-remove:hover { background: rgb(242 63 67 / 12%); }
+.fc-addons-store { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.fc-addons-store-card { display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-sm, 8px); border: 1px solid var(--border-subtle);
+    background: var(--background-mod-subtle, var(--background-base-lower)); transition: border-color .15s, transform .15s; }
+.fc-addons-store-card:hover { border-color: var(--fc-accent); transform: translateY(-1px); }
+.fc-addons-thumb { aspect-ratio: 16 / 9; background: var(--background-base-lowest, var(--background-tertiary)); }
+.fc-addons-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fc-addons-store-body { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; padding: 12px 14px 14px; }
+.fc-addons-store-name { display: flex; align-items: baseline; gap: 6px; font-size: 15px; font-weight: 700; color: var(--text-strong, var(--header-primary)); }
+.fc-addons-store-author { font-size: 12px; color: var(--text-muted); }
+.fc-addons-store-desc { flex: 1; font-size: 13px; line-height: 18px; color: var(--text-default, var(--text-normal)); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.fc-addons-store-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.fc-addons-store-stats { font-size: 12px; color: var(--text-muted); }
+.fc-addons-install { padding: 6px 16px; border-radius: 6px; background: var(--fc-accent); color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: filter .15s; }
+.fc-addons-install:hover { filter: brightness(1.12); }
+.fc-addons-installed { background: var(--background-modifier-accent, #4e5058); }
+.fc-addons-store-list { grid-template-columns: 1fr; }
+.fc-addons-store-list .fc-addons-store-card { flex-direction: row; }
+.fc-addons-store-list .fc-addons-thumb { width: 200px; flex: none; }

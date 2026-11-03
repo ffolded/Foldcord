@@ -16,7 +16,8 @@ import type { UserThemeHeader } from "@main/themes";
 import { SettingsTab } from "@components/settings/tabs/BaseTab";
 import { classNameFactory } from "@utils/css";
 import { promptToRestart } from "@utils/promptToRestart";
-import { useEffect, useMemo, useState } from "@webpack/common";
+import type { PluginNative } from "@utils/types";
+import { showToast, useEffect, useMemo, useState } from "@webpack/common";
 
 import { PluginCard } from "../plugins/PluginCard";
 import ThemesTab from "../themes";
@@ -118,45 +119,132 @@ const LinkIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" /></svg>
 );
 
+interface StoreTheme {
+    id: number;
+    name: string;
+    description: string;
+    version: string;
+    author: { display_name: string; };
+    downloads: number;
+    likes: string;
+    tags: string[];
+    file_name: string;
+    thumbnail_url: string | null;
+    latest_source_url: string;
+}
+
+const Native = VencordNative.pluginHelpers.FoldcordStore as PluginNative<typeof import("../../../../foldcordplugins/foldcordStore/native")>;
+
+let storeCache: StoreTheme[] | null = null;
+async function fetchStore() {
+    if (storeCache) return storeCache;
+    return storeCache = JSON.parse(await Native.fetchThemeStore()) as StoreTheme[];
+}
+
+const linkName = (url: string) => decodeURIComponent(url.split("/").pop() ?? url).replace(/\.theme\.css$|\.css$/i, "");
+
+interface Row {
+    key: string;
+    name: string;
+    author?: string;
+    description?: string;
+    version?: string;
+    on: boolean;
+    set(on: boolean): void;
+    remove?(): void;
+}
+
 export function ThemesPage() {
-    const settings = useSettings(["enabledThemes"]);
+    const settings = useSettings(["enabledThemes", "themeLinks", "enabledThemeLinks"]);
+    const [mode, setMode] = useState<"installed" | "browse">("installed");
     const [themes, setThemes] = useState<UserThemeHeader[] | null>(null);
+    const [store, setStore] = useState<StoreTheme[] | null>(storeCache);
+    const [storeError, setStoreError] = useState("");
     const [query, setQuery] = useState("");
     const [sort, setSort] = useState<Sort>("name");
     const [grid, setGrid] = useState(false);
 
     const refresh = () => VencordNative.themes.getThemesList().then(setThemes);
-    useEffect(() => { refresh(); }, []);
+    useEffect(() => { refresh(); fetchStore().then(setStore, () => { }); }, []);
+    useEffect(() => {
+        if (mode === "browse" && !store) fetchStore().then(setStore, e => setStoreError(String(e?.message ?? e)));
+    }, [mode]);
 
     const isOn = (f: string) => settings.enabledThemes.includes(f);
     const setOn = (f: string, on: boolean) => {
         settings.enabledThemes = on ? [...new Set([...settings.enabledThemes, f])] : settings.enabledThemes.filter(x => x !== f);
     };
+    const linkOn = (url: string) => settings.enabledThemeLinks.includes(url);
+    const setLinkOn = (url: string, on: boolean) => {
+        settings.enabledThemeLinks = on ? [...new Set([...settings.enabledThemeLinks, url])] : settings.enabledThemeLinks.filter(x => x !== url);
+    };
+    const [busy, setBusy] = useState<string | null>(null);
+    const installedFiles = new Set((themes ?? []).map(t => t.fileName));
+    const install = async (t: StoreTheme) => {
+        setBusy(t.file_name);
+        try {
+            await Native.installTheme(t.latest_source_url, t.file_name);
+            await refresh();
+            setOn(t.file_name, true);
+        } catch (e) {
+            showToast({ text: "Couldn't install " + t.name, variant: "critical" } as any);
+        } finally { setBusy(null); }
+    };
+    const uninstall = async (fileName: string) => {
+        setOn(fileName, false);
+        await Native.uninstallTheme(fileName);
+        await refresh();
+    };
+    const removeLink = (url: string) => {
+        settings.themeLinks = settings.themeLinks.filter(x => x !== url);
+        setLinkOn(url, false);
+    };
 
     const q = query.trim().toLowerCase();
-    const shown = (themes ?? [])
-        .filter(t => !q || [t.name, t.author, t.description].some(v => v?.toLowerCase().includes(q)))
-        .sort((a, b) => sort === "enabled"
-            ? Number(isOn(b.fileName)) - Number(isOn(a.fileName)) || a.name.localeCompare(b.name)
-            : a.name.localeCompare(b.name));
+    const match = (...v: (string | undefined)[]) => !q || v.some(x => x?.toLowerCase().includes(q));
+    const byFile = new Map((store ?? []).map(t => [t.file_name, t]));
+
+    const installed: Row[] = [
+        ...(themes ?? []).map(t => ({
+            key: t.fileName, name: t.name, author: t.author, description: t.description, version: t.version,
+            on: isOn(t.fileName), set: (on: boolean) => setOn(t.fileName, on),
+            remove: byFile.has(t.fileName) ? () => uninstall(t.fileName) : undefined
+        })),
+        ...settings.themeLinks.map(url => ({
+            key: url, name: linkName(url), author: undefined, version: undefined, description: url,
+            on: linkOn(url), set: (on: boolean) => setLinkOn(url, on), remove: () => removeLink(url)
+        }))
+    ]
+        .filter(r => match(r.name, r.author, r.description))
+        .sort((a, b) => sort === "enabled" ? Number(b.on) - Number(a.on) || a.name.localeCompare(b.name) : a.name.localeCompare(b.name));
+
+    const browse = (store ?? [])
+        .filter(t => match(t.name, t.author.display_name, t.description, ...t.tags))
+        .sort((a, b) => sort === "enabled" ? b.downloads - a.downloads : a.name.localeCompare(b.name));
+
+    const count = mode === "installed" ? installed.length : browse.length;
 
     return (
         <SettingsTab>
-            <AddonHeader title="Themes" count={shown.length} query={query} setQuery={setQuery} />
+            <AddonHeader title="Themes" count={count} query={query} setQuery={setQuery} />
             <div className={cl("controls")}>
                 <div className={cl("basic")}>
+                    <div className={cl("modes")}>
+                        <button className={cl("mode", { "mode-on": mode === "installed" })} onClick={() => setMode("installed")}>Installed</button>
+                        <button className={cl("mode", { "mode-on": mode === "browse" })} onClick={() => setMode("browse")}>Browse</button>
+                    </div>
                     {!IS_WEB && (
                         <button className={cl("icon-btn")} title="Open themes folder" onClick={() => VencordNative.themes.openFolder()}><FolderIcon width={20} height={20} /></button>
                     )}
                     <button className={cl("icon-btn")} title="Reload themes" onClick={refresh}><RefreshIcon /></button>
-                    <button className={cl("icon-btn")} title="Online themes and links" onClick={() => openSettingsTabModal(ThemesTab)}><LinkIcon /></button>
+                    <button className={cl("icon-btn")} title="Theme links and advanced options" onClick={() => openSettingsTabModal(ThemesTab)}><LinkIcon /></button>
                 </div>
                 <div className={cl("advanced")}>
                     <label className={cl("select")}>
                         Sort by:
                         <select value={sort} onChange={e => setSort(e.currentTarget.value as Sort)}>
                             <option value="name">Name</option>
-                            <option value="enabled">Enabled first</option>
+                            <option value="enabled">{mode === "browse" ? "Most downloaded" : "Enabled first"}</option>
                         </select>
                     </label>
                     <div className={cl("views")}>
@@ -166,27 +254,68 @@ export function ThemesPage() {
                 </div>
             </div>
 
-            {themes && themes.length === 0 && (
-                <div className={cl("empty")}>
-                    No themes yet. Put <code>.css</code> or <code>.theme.css</code> files in your themes folder, then reload.
-                </div>
-            )}
-            {themes && themes.length > 0 && shown.length === 0 && <div className={cl("empty")}>No themes match “{query}”.</div>}
-            {shown.length > 0 && (
-                <div className={cl("list", { grid })}>
-                    {shown.map(t => (
-                        <AddonCard
-                            key={t.fileName}
-                            name={t.name}
-                            author={t.author}
-                            description={t.description}
-                            enabled={isOn(t.fileName)}
-                            setEnabled={on => setOn(t.fileName, on)}
-                            footer={t.version ? <span className={cl("version")}>v{t.version}</span> : undefined}
-                        />
+            {mode === "installed" && (installed.length === 0
+                ? (
+                    <div className={cl("empty")}>
+                        {q
+                            ? <>No themes match “{query}”.</>
+                            : <>No themes yet. Open <b>Browse</b> to install one, or put <code>.theme.css</code> files in your themes folder.</>}
+                    </div>
+                )
+                : (
+                    <div className={cl("list", { grid })}>
+                        {installed.map(r => (
+                            <AddonCard
+                                key={r.key}
+                                name={r.name}
+                                author={r.author}
+                                description={r.description}
+                                enabled={r.on}
+                                setEnabled={r.set}
+                                footer={(r.version || r.remove) && (
+                                    <div className={cl("card-foot")}>
+                                        <span className={cl("version")}>{r.version ? "v" + r.version : ""}</span>
+                                        {r.remove && <button className={cl("remove")} onClick={r.remove}>Remove</button>}
+                                    </div>
+                                )}
+                            />
+                        ))}
+                    </div>
+                ))}
+
+            {mode === "browse" && (storeError
+                ? <div className={cl("empty")}>Couldn't load the theme store: {storeError}</div>
+                : !store
+                    ? <div className={cl("empty")}>Loading themes…</div>
+                    : (
+                        <div className={cl("store", { "store-list": !grid })}>
+                            {browse.map(t => {
+                                const have = installedFiles.has(t.file_name);
+                                return (
+                                    <div key={t.id} className={cl("store-card")}>
+                                        <div className={cl("thumb")}>
+                                            {t.thumbnail_url && <img src={"https://betterdiscord.app" + t.thumbnail_url} alt="" loading="lazy" />}
+                                        </div>
+                                        <div className={cl("store-body")}>
+                                            <div className={cl("store-name")}>{t.name}<span className={cl("version")}>v{t.version}</span></div>
+                                            <div className={cl("store-author")}>by {t.author.display_name}</div>
+                                            <div className={cl("store-desc")}>{t.description}</div>
+                                            <div className={cl("store-foot")}>
+                                                <span className={cl("store-stats")}>{t.downloads.toLocaleString()} downloads · {t.likes} likes</span>
+                                                <button
+                                                    className={cl("install", { installed: have })}
+                                                    disabled={busy === t.file_name}
+                                                    onClick={() => have ? uninstall(t.file_name) : install(t)}
+                                                >
+                                                    {busy === t.file_name ? "Installing…" : have ? "Remove" : "Install"}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     ))}
-                </div>
-            )}
         </SettingsTab>
     );
 }
