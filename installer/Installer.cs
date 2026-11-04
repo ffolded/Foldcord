@@ -88,7 +88,11 @@ namespace Foldcord.Installer
             using (var src = Assembly.GetExecutingAssembly().GetManifestResourceStream("foldcord.asar"))
             {
                 if (src == null) throw new Exception("Installer is missing foldcord.asar");
-                using (var dst = File.Create(AsarPath)) src.CopyTo(dst);
+                // Write next to it, then swap, so Discord never sees a half-written file.
+                var tmp = AsarPath + ".new";
+                using (var dst = File.Create(tmp)) src.CopyTo(dst);
+                if (File.Exists(AsarPath)) File.Replace(tmp, AsarPath, null);
+                else File.Move(tmp, AsarPath);
             }
             // Older installs used a loose dist folder; it is no longer loaded.
             var oldDist = IOPath.Combine(DataDir, "dist");
@@ -97,9 +101,20 @@ namespace Foldcord.Installer
 
         public static void KillDiscord(DiscordBuild b)
         {
-            foreach (var p in Process.GetProcessesByName(IOPath.GetFileNameWithoutExtension(b.Exe)))
+            // Discord's Update.exe can relaunch it, so stop that too and repeat until nothing is left.
+            var name = IOPath.GetFileNameWithoutExtension(b.Exe);
+            var update = IOPath.Combine(b.Folder, "Update.exe");
+            for (var round = 0; round < 20; round++)
             {
-                try { p.Kill(); p.WaitForExit(5000); } catch { }
+                var procs = Process.GetProcessesByName(name).ToList();
+                foreach (var u in Process.GetProcessesByName("Update"))
+                {
+                    try { if (string.Equals(u.MainModule.FileName, update, StringComparison.OrdinalIgnoreCase)) procs.Add(u); } catch { }
+                }
+                if (procs.Count == 0) return;
+                foreach (var p in procs) { try { p.Kill(); } catch { } }
+                foreach (var p in procs) { try { p.WaitForExit(1500); } catch { } }
+                System.Threading.Thread.Sleep(250);
             }
         }
 
@@ -115,7 +130,18 @@ namespace Foldcord.Installer
 
             Directory.CreateDirectory(app);
             var asarPath = AsarPath.Replace('\\', '/');
-            File.WriteAllText(IOPath.Combine(app, "index.js"), "// Foldcord\nrequire(\"" + asarPath + "\");\n");
+            // If Foldcord can't load, start plain Discord instead of showing a crash dialog.
+            File.WriteAllText(IOPath.Combine(app, "index.js"),
+                "// Foldcord\n" +
+                "try {\n" +
+                "    require(\"" + asarPath + "\");\n" +
+                "} catch (e) {\n" +
+                "    console.error(\"[Foldcord] failed to load, starting Discord without it\", e);\n" +
+                "    const path = require(\"path\");\n" +
+                "    const asar = path.join(__dirname, \"..\", \"_app.asar\");\n" +
+                "    require(\"electron\").app.setAppPath(asar);\n" +
+                "    require(asar);\n" +
+                "}\n");
             File.WriteAllText(IOPath.Combine(app, "package.json"), "{\"name\":\"discord\",\"main\":\"index.js\"}\n");
         }
 
